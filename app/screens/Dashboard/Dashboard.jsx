@@ -7,11 +7,11 @@ import YearlyBarchart from "./components/YearlyBarchart";
 const Dashboard = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.scrollArea}>
+      <ScrollView style={styles.scrollArea}>
         <MonthlyBillCard />
         <LastThreePaidUserCard />
         <YearlyBarchart />
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -26,5 +26,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
     paddingTop: 8,
   },
-  scrollArea: { flex: 0.9, gap: 14 },
+  scrollArea: { flexGrow: 0.9, gap: 14 },
 });
