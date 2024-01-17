@@ -1,73 +1,132 @@
-import React, { useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
-  Animated,
   Pressable,
+  Modal,
+  Button,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import SubScreenLayout from "../layout/SubScreenLayout";
 import SmallBillCard from "./card/SmallBillCard";
 
 import Icon from "react-native-vector-icons/FontAwesome5";
-import { useNavigation } from "@react-navigation/native";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 
+const DATA = [
+  {
+    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba1",
+    title: "First Item",
+  },
+  {
+    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f632",
+    title: "Second Item",
+  },
+  {
+    id: "58694a0f-3da1-471f-bd96-145571e29d723",
+    title: "Third Item",
+  },
+  {
+    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba4",
+    title: "First Item",
+  },
+  {
+    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f635",
+    title: "Second Item",
+  },
+  {
+    id: "58694a0f-3da1-471f-bd96-145571e29d72ds",
+    title: "Third Item",
+  },
+  {
+    id: "bd7acbea-c1b1-sd46c2-aed5-3ad53abb28ba",
+    title: "First Item",
+  },
+  {
+    id: "3ac68afc-c605-48sfd3-a4f8-fbd91aa97f63",
+    title: "Second Item",
+  },
+  {
+    id: "af58694a0f-3da1-471fsf-bd96-145571e29d72",
+    title: "Third Item",
+  },
+  {
+    id: "bd7acbea-c1b1-46c2-asfed5-3ad53abb28ba",
+    title: "First Item",
+  },
+  {
+    id: "3aafvc68afc-c605-48d3-a4f8-fbd91aa97f63",
+    title: "Second Item",
+  },
+  {
+    id: "58694easa0f-3da1-471f-bd96-145571e29d72",
+    title: "Third Item",
+  },
+];
+
+const { width, height } = Dimensions.get("window");
 const PaymentList = () => {
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation();
+  // ref
+  const bottomSheetModalRef = useRef(null);
 
-  const showBill = () => {
-    navigation.navigate("SingleBill");
-  };
+  // variables
+  const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   return (
     <SubScreenLayout>
-      <View style={styles.container}>
-        <Text style={styles.header}>Payment List</Text>
+      <BottomSheetModalProvider>
+        <View style={styles.container}>
+          <Text style={styles.header}>Payment List</Text>
+          <View style={[styles.searchBar]}>
+            <TextInput
+              style={styles.input}
+              keyboardType="default"
+              keyboardAppearance="default"
+              placeholder="find bill"
+            />
+            <Icon name="search" color="white" size={20} />
+          </View>
 
-        <Animated.View
-          style={[
-            styles.searchBar,
-            {
-              transform: [
-                {
-                  translateY: scrollY.interpolate({
-                    inputRange: [0, 50], // Adjust the range based on your needs
-                    outputRange: [0, 0],
-                    extrapolate: "clamp",
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <TextInput
-            style={styles.input}
-            keyboardType="default"
-            keyboardAppearance="default"
-            placeholder="find bill"
-          />
-          <Icon name="search" color="white" size={20} />
-        </Animated.View>
-
-        <Animated.ScrollView
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
-          style={styles.scrollView}
-        >
-          <View style={styles.cardContainer}>
-            {[...Array(20).keys()].map((idx) => (
-              <Pressable key={idx} onPress={showBill}>
+          <FlatList
+            data={DATA}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={handlePresentModalPress}
+                style={{ paddingVertical: 5 }}
+              >
                 <SmallBillCard />
               </Pressable>
-            ))}
-          </View>
-        </Animated.ScrollView>
-      </View>
+            )}
+            keyExtractor={(item) => item.id}
+            style={styles.scrollView}
+          />
+
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}
+          >
+            <View style={styles.contentContainer}>
+              <Text>Awesome 🎉</Text>
+            </View>
+          </BottomSheetModal>
+        </View>
+      </BottomSheetModalProvider>
     </SubScreenLayout>
   );
 };
@@ -93,12 +152,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 5,
-    marginHorizontal: 10,
-    position: "absolute",
-    top: 30,
-    left: 0,
-    right: 0,
-    zIndex: 1,
   },
   input: {
     flex: 1,
@@ -106,12 +159,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   scrollView: {
-    flexGrow: 0.71,
-    marginTop: 30,
-  },
-  cardContainer: {
-    flex: 1,
-    gap: 10,
-    paddingTop: 10,
+    flexGrow: height * 0.00082512,
+    marginTop: 4,
+    paddingBottom: 5,
   },
 });

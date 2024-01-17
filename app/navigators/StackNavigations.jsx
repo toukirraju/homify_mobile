@@ -17,8 +17,13 @@ const StackNavigations = () => {
       <Stack.Screen name="tab" component={TabNavigations} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="PaymentList" component={PaymentList} />
-      <Stack.Screen name="SingleBill" component={SingleBill} />
-      <Stack.Group screenOptions={{ presentation: "modal" }}>
+
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+        }}
+      >
+        <Stack.Screen name="SingleBill" component={SingleBill} />
         <Stack.Screen name="Help" component={Help} />
         <Stack.Screen name="Invite" component={Invite} />
       </Stack.Group>

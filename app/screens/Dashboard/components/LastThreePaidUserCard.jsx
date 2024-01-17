@@ -1,11 +1,31 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import React from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import InvoiceHeaderCard from "../../../components/card/InvoiceHeaderCard";
+import SingleBill from "../../../components/SingleBill";
 
 const LastThreePaidUserCard = () => {
   const navigation = useNavigation();
+
+  // ref
+  const bottomSheetModalRef = useRef(null);
+
+  // variables
+  const snapPoints = useMemo(() => ["50%", "100%"], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
 
   const showAllBill = () => {
     navigation.navigate("PaymentList");
@@ -19,10 +39,42 @@ const LastThreePaidUserCard = () => {
         </Pressable>
       </View>
       <View style={styles.cardContainer}>
-        <CardItem />
-        <CardItem />
-        <CardItem />
+        <Pressable
+          onPress={handlePresentModalPress}
+          style={{ paddingVertical: 5 }}
+        >
+          <CardItem />
+        </Pressable>
+        <Pressable
+          onPress={handlePresentModalPress}
+          style={{ paddingVertical: 5 }}
+        >
+          <CardItem />
+        </Pressable>
+        <Pressable
+          onPress={handlePresentModalPress}
+          style={{ paddingVertical: 5 }}
+        >
+          <CardItem />
+        </Pressable>
       </View>
+
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        handleStyle={{
+          backgroundColor: "#767676",
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+        }}
+      >
+        <View style={styles.bottomSheetContentContainer}>
+          <InvoiceHeaderCard />
+          <SingleBill />
+        </View>
+      </BottomSheetModal>
     </View>
   );
 };
@@ -147,5 +199,11 @@ const styles = StyleSheet.create({
     color: "lightgray",
     fontSize: 12,
     fontWeight: "600",
+  },
+
+  bottomSheetContentContainer: {
+    backgroundColor: "#131313",
+    flex: 1,
+    padding: 10,
   },
 });
